@@ -30,3 +30,16 @@
 *.exe
 *.out
 *.app
+
+# build
+build/
+
+# logs
+log/
+*.log
+
+# Cache
+*.pyc
+
+# IDE
+.vscode
