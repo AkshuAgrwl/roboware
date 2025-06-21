@@ -1,0 +1,3 @@
+version 1.0
+
+bool check = false

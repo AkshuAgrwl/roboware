@@ -13,3 +13,7 @@ target_include_directories(rw_core_messages
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
+
+# Test setup
+enable_testing()
+add_subdirectory(tests)

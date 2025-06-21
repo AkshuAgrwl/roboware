@@ -1,0 +1,6 @@
+version 1.10
+
+# some comment - must be ignored
+bool pos = false
+float64[3] vel_set = [1.0, 2.5, 3.3]
+string acc_str # some more comment - must be ignored too
