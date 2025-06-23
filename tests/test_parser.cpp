@@ -1,13 +1,30 @@
 #include "roboware/core/messages/parser.hpp"
 
 #include <catch2/catch_test_macros.hpp>
+#include <fstream>
 
 using namespace rw::core::messages;
 
+bool read_msg_file(const std::string path, std::string &raw,
+                   std::string &name) {
+    std::size_t start = path.find_last_of("/\\");
+    std::size_t end = path.find_last_of(".");
+    name = path.substr(start + 1, end - start - 1);
+
+    std::ifstream file(path);
+    if (!file)
+        return false;
+    raw = std::string(std::istreambuf_iterator<char>(file),
+                      std::istreambuf_iterator<char>());
+
+    return true;
+}
+
 TEST_CASE("Parsing a valid .msg file") {
     Message msg;
-    bool result = parse_msg("data/test_parser.msg", msg);
-    REQUIRE(result == true);
+    std::string raw, name;
+    REQUIRE(read_msg_file("data/test_parser.msg", raw, name) == true);
+    REQUIRE(parse_msg(raw, name, msg) == true);
     REQUIRE(msg.name == "test_parser");
     REQUIRE(msg.fields.size() == 2);
     REQUIRE(msg.fields[0].name == "position");
@@ -16,38 +33,43 @@ TEST_CASE("Parsing a valid .msg file") {
 
 TEST_CASE("Parsing a valid .rmsg file") {
     Message msg;
-    bool result = parse_msg("data/test_parser.rmsg", msg);
-    REQUIRE(result == true);
+    std::string raw, name;
+    REQUIRE(read_msg_file("data/test_parser.rmsg", raw, name) == true);
+    REQUIRE(parse_msg(raw, name, msg) == true);
     REQUIRE(msg.name == "test_parser");
     REQUIRE(msg.fields.size() == 1);
     REQUIRE(msg.fields[0].name == "velocity");
     REQUIRE(msg.fields[0].type == FieldType::STRING);
 }
 
-TEST_CASE("Invalid file extension is rejected") {
-    Message msg;
-    bool result = parse_msg("data/test_parser.txt", msg);
-    REQUIRE(result == false);
-}
+// TEST_CASE("Invalid file extension is rejected") {
+//     Message msg;
+//     std::string raw, name;
+//     REQUIRE(read_msg_file("data/test_parser.txt", raw, name) == true);
+//     REQUIRE(parse_msg(raw, name, msg) == false);
+// }
 
 TEST_CASE("Version definition after any fields is rejected") {
     Message msg;
-    bool result = parse_msg("data/test_parser_version_1.msg", msg);
-    REQUIRE(result == false);
+    std::string raw, name;
+    REQUIRE(read_msg_file("data/test_parser_version_1.msg", raw, name) == true);
+    REQUIRE(parse_msg(raw, name, msg) == false);
 }
 
 TEST_CASE("Version check") {
     Message msg;
-    bool result = parse_msg("data/test_parser_version_2.msg", msg);
-    REQUIRE(result == true);
+    std::string raw, name;
+    REQUIRE(read_msg_file("data/test_parser_version_2.msg", raw, name) == true);
+    REQUIRE(parse_msg(raw, name, msg) == true);
     REQUIRE(msg.version == "1.15");
 }
 
 TEST_CASE(".msg complete validity") {
     Message msg;
-    bool result = parse_msg("data/test_parser_complete.rmsg", msg);
+    std::string raw, name;
+    REQUIRE(read_msg_file("data/test_parser_complete.rmsg", raw, name) == true);
+    REQUIRE(parse_msg(raw, name, msg) == true);
 
-    REQUIRE(result == true);
     REQUIRE(msg.name == "test_parser_complete");
     REQUIRE(msg.version == "1.10");
     REQUIRE(msg.fields.size() == 3);

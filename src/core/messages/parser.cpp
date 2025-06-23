@@ -57,36 +57,39 @@ inline Field parse_field_line(const std::string &line) {
     return field;
 }
 
-bool parse_msg(const std::string &path, Message &msg) {
-    msg = Message{};
+bool parse_msg(const std::string raw, const std::string msg_name,
+               Message &msg) {
     msg.version = "0.1"; // default version
 
-    std::string ext = path.substr(path.find_last_of('.'));
-    if (ext != ".msg" && ext != ".rmsg") {
-        std::cerr
-            << "[roboware::core::messages::parser] Invalid file extension: "
-            << path << std::endl;
-        return false;
-    }
+    // std::string ext = path.substr(path.find_last_of('.'));
+    // if (ext != ".msg" && ext != ".rmsg") {
+    //     std::cerr
+    //         << "[roboware::core::messages::parser] Invalid file extension: "
+    //         << path << std::endl;
+    //     return false;
+    // }
 
-    std::ifstream file(path);
-    if (!file.is_open()) {
-        std::cerr << "[roboware::core::messages::parser] Failed to open "
-                  << path << std::endl;
-        return false;
-    }
+    // std::ifstream file(path);
+    // if (!file.is_open()) {
+    //     std::cerr << "[roboware::core::messages::parser] Failed to open "
+    //               << path << std::endl;
+    //     return false;
+    // }
 
-    std::size_t start = path.find_last_of("/\\");
-    std::size_t end = path.find_last_of(".");
-    msg.name = path.substr(start + 1, end - start - 1);
+    // std::size_t start = path.find_last_of("/\\");
+    // std::size_t end = path.find_last_of(".");
+    // msg.name = path.substr(start + 1, end - start - 1);
 
+    msg.name = msg_name;
+
+    std::istringstream stream(raw);
     std::string line;
     int lineno = 0;
     bool field_started = false;
 
     std::regex version_regex(R"(^version\s+(\d+\.\d+)$)");
 
-    while (std::getline(file, line)) {
+    while (std::getline(stream, line)) {
         lineno++;
         line = trim(line);
         if (line.empty() || line[0] == '#')
