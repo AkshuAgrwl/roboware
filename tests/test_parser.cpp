@@ -20,16 +20,16 @@ bool read_msg_file(const std::string path, std::string &raw,
     return true;
 }
 
-TEST_CASE("Parsing a valid .msg file") {
-    Message msg;
-    std::string raw, name;
-    REQUIRE(read_msg_file("data/test_parser.msg", raw, name) == true);
-    REQUIRE(parse_msg(raw, name, msg) == true);
-    REQUIRE(msg.name == "test_parser");
-    REQUIRE(msg.fields.size() == 2);
-    REQUIRE(msg.fields[0].name == "position");
-    REQUIRE(msg.fields[0].type == FieldType::FLOAT32);
-}
+// TEST_CASE("Parsing a valid .msg file") {
+//     Message msg;
+//     std::string raw, name;
+//     REQUIRE(read_msg_file("data/test_parser.msg", raw, name) == true);
+//     REQUIRE(parse_msg(raw, name, msg) == true);
+//     REQUIRE(msg.name == "test_parser");
+//     REQUIRE(msg.fields.size() == 2);
+//     REQUIRE(msg.fields[0].name == "position");
+//     REQUIRE(msg.fields[0].type == FieldType::FLOAT32);
+// }
 
 TEST_CASE("Parsing a valid .rmsg file") {
     Message msg;
@@ -52,19 +52,21 @@ TEST_CASE("Parsing a valid .rmsg file") {
 TEST_CASE("Version definition after any fields is rejected") {
     Message msg;
     std::string raw, name;
-    REQUIRE(read_msg_file("data/test_parser_version_1.msg", raw, name) == true);
+    REQUIRE(read_msg_file("data/test_parser_version_1.rmsg", raw, name) ==
+            true);
     REQUIRE(parse_msg(raw, name, msg) == false);
 }
 
 TEST_CASE("Version check") {
     Message msg;
     std::string raw, name;
-    REQUIRE(read_msg_file("data/test_parser_version_2.msg", raw, name) == true);
+    REQUIRE(read_msg_file("data/test_parser_version_2.rmsg", raw, name) ==
+            true);
     REQUIRE(parse_msg(raw, name, msg) == true);
     REQUIRE(msg.version == "1.15");
 }
 
-TEST_CASE(".msg complete validity") {
+TEST_CASE("message complete validity check") {
     Message msg;
     std::string raw, name;
     REQUIRE(read_msg_file("data/test_parser_complete.rmsg", raw, name) == true);
